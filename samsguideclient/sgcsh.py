@@ -39,6 +39,13 @@ class GuideClientShell(cmd.Cmd):
 	####################
 
 
+	def do_connect(self, *args):
+		"""Connect to the specified endpoint
+		"""
+		endpoint = args[0] if args[0] else None
+		self.guide_client.connect_to_server(endpoint=endpoint)
+
+
 	def do_exit(self, *args):
 		return True
 

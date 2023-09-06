@@ -1,5 +1,7 @@
 import logging
 
+import zmq
+
 import measurement_event_manager.util.logger as mem_logging
 
 import samsguideclient as sgc
@@ -14,8 +16,10 @@ def launch_client():
 	'''Start up a Guide Client instance
 	'''
 
+	## Setup
+	########
+
 	## Logging
-	##########
 
 	logger = logging.getLogger("SamsGuideClient")
 	logger = mem_logging.quick_config(logger,
@@ -25,11 +29,18 @@ def launch_client():
 	logger.debug("Logging initialized.")
 
 
+	## ZMQ messaging
+	context = zmq.Context()
+
+
 	## Guide client
 	###############
 
 	## Instantiate object
-	guide_client = sgc.GuideClient.GuideClient()
+	guide_client = sgc.GuideClient.GuideClient(
+										logger=logger,
+										context=context,
+										)
 
 	## Interactive mode
 	if True:
