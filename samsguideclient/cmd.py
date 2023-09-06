@@ -1,3 +1,7 @@
+import logging
+
+import measurement_event_manager.util.logger as mem_logging
+
 import samsguideclient as sgc
 
 
@@ -9,6 +13,17 @@ import samsguideclient as sgc
 def launch_client():
 	'''Start up a Guide Client instance
 	'''
+
+	## Logging
+	##########
+
+	logger = logging.getLogger("SamsGuideClient")
+	logger = mem_logging.quick_config(logger,
+									  console_log_level=logging.INFO,
+									  file_log_level=logging.DEBUG,
+									  )
+	logger.debug("Logging initialized.")
+
 
 	## Guide client
 	###############
