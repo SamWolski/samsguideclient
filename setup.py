@@ -15,7 +15,7 @@ setuptools.setup(
 	install_requires=_requires,
 	entry_points={
 		"console_scripts": [
-			"sgc = samsguideclient.cmd:launch_client",
+			"sgc = samsguideclient.cmdline:launch_client",
 		],
 	},
 )

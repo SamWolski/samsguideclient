@@ -3,6 +3,7 @@ Interactive shell for Sam's Guide Client for MEM
 """
 
 import cmd
+import os
 
 
 ###############################################################################
@@ -39,13 +40,48 @@ class GuideClientShell(cmd.Cmd):
 	####################
 
 
-	def do_connect(self, *args):
+	## Server-related functions
+
+
+	def do_connect(self, endpoint):
 		"""Connect to the specified endpoint
 		"""
-		endpoint = args[0] if args[0] else None
+		## TODO perhaps find a more elegant way of handling empty strings
+		endpoint = endpoint if endpoint else None
 		self.guide_client.connect_to_server(endpoint=endpoint)
 
 
-	def do_exit(self, *args):
+	## Messaging and requests
+
+
+	def do_idn(self, args):
+		"""Send an identification (IDN) query
+		"""
+		self.guide_client.send_idn()
+
+
+	def do_add(self, config_path):
+		"""Add a measurement to the queue using the specified config file(s)
+		"""
+		self.guide_client.add_from_file(base_dir=os.getcwd(),
+										config_path=config_path)
+		
+	
+	def do_remove(self, index):
+		"""Remove a measurement from the queue
+		"""
+		self.guide_client.send_remove(index)
+
+
+	def do_query(self, args):
+		"""Query the queue contents
+		"""
+		self.guide_client.send_query()
+
+
+	## Shell functions
+
+
+	def do_exit(self, args):
 		return True
 
