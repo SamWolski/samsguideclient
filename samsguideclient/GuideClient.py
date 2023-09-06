@@ -184,3 +184,18 @@ class GuideClient:
 		reply = self.send_request(request)
 		return reply
 
+
+	## FCH - Fetch counter change or query
+
+	def send_fetch(self, counter, *args):
+		"""Set the number of measurements to be FetCHed from the queue
+		"""
+		request = ["FCH"]
+		## If the counter is not int-able, treat it as a query
+		try:
+			request.append(str(int(counter)))
+		except ValueError:
+			pass
+		reply = self.send_request(request)
+		return reply
+
