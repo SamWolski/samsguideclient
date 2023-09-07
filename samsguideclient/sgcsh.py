@@ -51,10 +51,18 @@ class GuideClientShell(cmd.Cmd):
 		self.guide_client.connect_to_server(endpoint=endpoint)
 
 
-	def do_fetch(self, counter):
-		"""Set the pause status of fetching the next measurement from the queue
+	def do_fetch(self, new_value):
+		"""Interact with the fetch counter of the server queue
+
+		A single int argument will be used to set the value.
+		Calling with no arguments will query the existing value.
 		"""
-		self.guide_client.send_fetch(counter)
+		try:
+			new_value = int(new_value)
+		except ValueError:
+			self.guide_client.query_fetch_counter()
+		else:
+			self.guide_client.set_fetch_counter(new_value)
 
 
 	## Messaging and requests

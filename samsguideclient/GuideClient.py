@@ -140,6 +140,26 @@ class GuideClient:
 		self.send_add(measurement_params)
 
 
+	## Server options
+	#################
+
+
+	def set_fetch_counter(self, new_value: int):
+		"""Set the fetch counter of the server queue
+		"""
+		counter_value = self._send_fetch(new_value)
+		self.logger.info(f"Fetch counter set to {counter_value}")
+		return counter_value
+	
+
+	def query_fetch_counter(self):
+		"""Query the value of the fetch counter of the server queue
+		"""
+		counter_value = self._send_fetch()
+		self.logger.info(f"Fetch counter is {counter_value}")
+		return counter_value
+
+
 	## MEM-GR interface
 	###################
 
@@ -189,15 +209,17 @@ class GuideClient:
 
 	## FCH - Fetch counter change or query
 
-	def send_fetch(self, counter, *args):
+	def _send_fetch(self, new_value=None):
 		"""Set the number of measurements to be FetCHed from the queue
 		"""
+		## Construct request
 		request = ["FCH"]
-		## If the counter is not int-able, treat it as a query
-		try:
-			request.append(str(int(counter)))
-		except ValueError:
-			pass
+		if new_value is not None:
+			request.append(str(int(new_value)))
+		## Send request
 		reply = self.send_request(request)
-		return reply
+		## Process reply
+		if reply[0] == "FCH":
+			return reply[1]
+		## TODO handle errors?
 
