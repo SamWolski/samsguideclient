@@ -77,8 +77,12 @@ class GuideClientShell(cmd.Cmd):
 	def do_add(self, config_path):
 		"""Add a measurement to the queue using the specified config file(s)
 		"""
-		self.guide_client.add_from_file(base_dir=os.getcwd(),
-										config_path=config_path)
+		try:
+			self.guide_client.add_from_file(base_dir=os.getcwd(),
+											config_path=config_path)
+		except FileNotFoundError:
+			print(f"Config file not found at {config_path}; "
+		 		  "cannot process add request.")
 		
 	
 	def do_remove(self, index):
