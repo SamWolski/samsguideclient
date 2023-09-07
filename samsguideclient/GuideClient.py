@@ -111,7 +111,9 @@ class GuideClient:
 		## Get the content from the reply - the protocol doesn't really give us
 		## any information, as even an error will be returned with the same
 		## protocol
-		reply = reply_wrapped[1:]
+		reply_binary = reply_wrapped[1:]
+		## Decode the content from binary
+		reply = [rr.decode() for rr in reply_binary]
 		## Return the reply content
 		return reply
 
