@@ -75,7 +75,7 @@ class GuideClient:
 	########################
 
 
-	def send_request(self, request):
+	def _send_request(self, request):
 		"""Send a request, returning the reply
 		"""
 
@@ -137,12 +137,35 @@ class GuideClient:
 		measurement_params = MeasurementParams.MeasurementParams(**config)
 		## Make the addition API call
 		self.logger.debug("Sending measurement to server...")
-		self.send_add(measurement_params)
+		self._send_add(measurement_params)
 
 
-	## Server options
-	#################
+	def remove_measurement(self, index=None):
+		"""Request the removal of a measurement from the server queue
+		"""
+		remove_status = self._send_remove(index)
 
+
+	def get_queue_contents(self):
+		"""Request the current contents of the server queue
+		"""
+		queue_contents = self._send_query()
+		return queue_contents
+
+
+	## Server functionality
+	#######################
+
+	## General
+
+	def get_server_identity(self):
+		"""Query the identity of the server
+		"""
+		server_idn = self._send_idn()
+		return server_idn
+
+
+	## Fetch counter
 
 	def set_fetch_counter(self, new_value: int):
 		"""Set the fetch counter of the server queue
@@ -152,7 +175,7 @@ class GuideClient:
 		return counter_value
 	
 
-	def query_fetch_counter(self):
+	def get_fetch_counter(self):
 		"""Query the value of the fetch counter of the server queue
 		"""
 		counter_value = self._send_fetch()
@@ -163,47 +186,49 @@ class GuideClient:
 	## MEM-GR interface
 	###################
 
+	## NB These methods are part of the private interface of the class itself,
+	## and should not be used as a public API!
 
 	## IDN - identification
 
-	def send_idn(self, *args):
+	def _send_idn(self):
 		"""Send an identification (IDN) query
 		"""
 		request = ["IDN",]
-		reply = self.send_request(request)
+		reply = self._send_request(request)
 		return reply
 
 
 	## ADD - Addition to queue
 
-	def send_add(self, measurement, *args):
+	def _send_add(self, measurement):
 		"""ADD a measurement to the queue
 		"""
 		request = ["ADD", measurement.to_json()]
-		reply = self.send_request(request)
+		reply = self._send_request(request)
 		return reply
 
 
 	## RMV - Removal from queue
 
-	def send_remove(self, index, *args):
+	def _send_remove(self, index=None):
 		"""ReMoVe a measurement from the queue
 		"""
 		request = ["RMV"]
-		if index:
+		if index is not None:
 			request.append(str(index))
-		## Sending just the header will induce server-defined default behaviour
-		reply = self.send_request(request)
+		## Sending with no args will induce server-defined default behaviour
+		reply = self._send_request(request)
 		return reply
 	
 
 	## QUE - Queue content query
 
-	def send_query(self, *args):
+	def _send_query(self):
 		"""QUEry the measurement queue
 		"""
 		request = ["QUE",]
-		reply = self.send_request(request)
+		reply = self._send_request(request)
 		return reply
 
 
@@ -217,7 +242,7 @@ class GuideClient:
 		if new_value is not None:
 			request.append(str(int(new_value)))
 		## Send request
-		reply = self.send_request(request)
+		reply = self._send_request(request)
 		## Process reply
 		if reply[0] == "FCH":
 			return reply[1]

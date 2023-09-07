@@ -60,7 +60,7 @@ class GuideClientShell(cmd.Cmd):
 		try:
 			new_value = int(new_value)
 		except ValueError:
-			self.guide_client.query_fetch_counter()
+			self.guide_client.get_fetch_counter()
 		else:
 			self.guide_client.set_fetch_counter(new_value)
 
@@ -71,7 +71,7 @@ class GuideClientShell(cmd.Cmd):
 	def do_idn(self, args):
 		"""Send an identification (IDN) query
 		"""
-		self.guide_client.send_idn()
+		self.guide_client.get_server_identity()
 
 
 	def do_add(self, config_path):
@@ -84,13 +84,13 @@ class GuideClientShell(cmd.Cmd):
 	def do_remove(self, index):
 		"""Remove a measurement from the queue
 		"""
-		self.guide_client.send_remove(index)
+		self.guide_client.remove_measurement(index)
 
 
 	def do_query(self, args):
 		"""Query the queue contents
 		"""
-		self.guide_client.send_query()
+		self.guide_client.get_queue_contents()
 
 
 	## Shell functions
