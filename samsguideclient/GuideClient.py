@@ -163,10 +163,10 @@ class GuideClient:
 		## Get the contents of the queue
 		queue_contents = self.get_queue_contents()
 		print_list = []
-		for mp_spec in queue_contents:
+		for index, mp_spec in enumerate(queue_contents):
 			## Reconstruct the MeasurementParams object
 			mp_obj = MeasurementParams.from_json(mp_spec)
-			print_list.append(pretty_print(mp_obj))
+			print_list.append(pretty_print(mp_obj, index=index))
 		## TODO confirm that this will be lazy-evaluated only when used later
 		print_generator = (f"{pp}\n" for pp in print_list)
 		## Write to file-like object
