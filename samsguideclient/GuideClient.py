@@ -3,11 +3,14 @@ OOP interface for Sam's Guide Client
 """
 
 import os
+import sys
 
 import himl
 import zmq
 
 from measurement_event_manager import MeasurementParams
+
+from samsguideclient.pretty_print import pretty_print
 
 
 ###############################################################################
@@ -149,8 +152,30 @@ class GuideClient:
 	def get_queue_contents(self):
 		"""Request the current contents of the server queue
 		"""
-		queue_contents = self._send_query()
-		return queue_contents
+		queue_reply = self._send_query()
+		## The first element is the reply header, "QUE"
+		return queue_reply[1:]
+
+
+	def dump_queue_contents(self, target=None):
+		"""Dump the current contents of the server queue to a writeable target
+		"""
+		## Get the contents of the queue
+		queue_contents = self.get_queue_contents()
+		print_list = []
+		for mp_spec in queue_contents:
+			## Reconstruct the MeasurementParams object
+			mp_obj = MeasurementParams.from_json(mp_spec)
+			print_list.append(pretty_print(mp_obj))
+		## TODO confirm that this will be lazy-evaluated only when used later
+		print_generator = (f"{pp}\n" for pp in print_list)
+		## Write to file-like object
+		if target:
+			with open(target, 'w') as target_handle:
+				target_handle.writelines(print_generator)
+		## Fall back on stdout
+		else:
+			sys.stdout.writelines(print_generator)
 
 
 	## Server functionality

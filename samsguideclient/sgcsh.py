@@ -91,10 +91,14 @@ class GuideClientShell(cmd.Cmd):
 		self.guide_client.remove_measurement(index)
 
 
-	def do_query(self, args):
-		"""Query the queue contents
+	def do_query(self, target):
+		"""Query the queue contents and dump them to a writeable target
+
+		Defaults to sys.stdout
 		"""
-		self.guide_client.get_queue_contents()
+		if target == "":
+			target = None
+		self.guide_client.dump_queue_contents(target)
 
 
 	## Shell functions
