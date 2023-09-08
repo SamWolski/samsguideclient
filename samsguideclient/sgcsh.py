@@ -101,6 +101,12 @@ class GuideClientShell(cmd.Cmd):
 		self.guide_client.dump_queue_contents(target)
 
 
+	def do_len(self, args):
+		"""Query the length of the server queue
+		"""
+		self.guide_client.get_queue_len()
+
+
 	## Shell functions
 
 

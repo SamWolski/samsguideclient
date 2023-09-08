@@ -178,6 +178,14 @@ class GuideClient:
 			sys.stdout.writelines(print_generator)
 
 
+	def get_queue_len(self):
+		"""Get the length of the server queue (number of measurements)
+		"""
+		len_reply = self._send_len()
+		## The first element is the reply header, "LEN"
+		return len_reply[1:]
+
+
 	## Server functionality
 	#######################
 
@@ -253,6 +261,16 @@ class GuideClient:
 		"""QUEry the measurement queue
 		"""
 		request = ["QUE",]
+		reply = self._send_request(request)
+		return reply
+
+
+	## LEN - Queue length query
+
+	def _send_len(self):
+		"""Check the LENgth of the queue
+		"""
+		request = ["LEN"]
 		reply = self._send_request(request)
 		return reply
 
