@@ -27,9 +27,13 @@ def pretty_print(mp,
 	print_str += "\n"
 
 	## Body
-	print_str += f"Meas type   : {mp.measurement_type}\n"
-	# print_str += f"Start time  : {mp.start_time}\n"
-	# print_str += f"End time    : {mp.end_time}\n"
+	
+	print_str += f"Submitter: {mp.submitter}\n"
+	## Metadata
+	print_str += f"Metadata:\n"
+	for meta_key, meta_val in mp.metadata.items():
+		print_str += f"    {meta_key:-<20}: {meta_val}\n"
+	## Setvals
 	print_str += f"Setvals:\n"
 	for instr_name, instr_vals in mp.setvals.items():
 		print_str += f"--> {instr_name}:\n"
