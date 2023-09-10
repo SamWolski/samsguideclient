@@ -2,6 +2,7 @@
 OOP interface for Sam's Guide Client
 """
 
+import collections
 import os
 import sys
 
@@ -9,6 +10,7 @@ import himl
 import zmq
 
 from measurement_event_manager import MeasurementParams
+from measurement_event_manager.MeasurementQueue import QueueEmptyError
 
 from samsguideclient.pretty_print import pretty_print
 
@@ -143,10 +145,39 @@ class GuideClient:
 		self._send_add(measurement_params)
 
 
-	def remove_measurement(self, index=None):
+	def remove_measurement(self, index_iterable):
 		"""Request the removal of a measurement from the server queue
 		"""
-		remove_status = self._send_remove(index)
+		## Create a list corresponding to the queue indices
+		queue_len = self.get_queue_len()
+		if queue_len == 0:
+			self.logger.info("Measurement queue is empty; cannot remove.")
+			return
+		queue_indices = list(range(queue_len))
+		## For each entry in the index iterable, apply it as an index on the 
+		## indices list, and append the resulting indices to the container
+		resolved_indices = []
+		for index_spec in index_iterable:
+			## Apply python's indexing powers directly to the queue_indices
+			new_indices = queue_indices[index_spec]
+			## Check if the new indices are a singleton or list (when slicing)
+			## to avoid ending up with some nested list elements
+			if isinstance(new_indices, collections.abc.Sequence):
+				resolved_indices.extend(new_indices)
+			else:
+				resolved_indices.append(new_indices)
+		## We can make a set of the resolved indices, to unclutter the message
+		## by removing potential duplicates
+		index_list = list(set(resolved_indices))
+		## Send the removal request
+		remove_reply = self._send_remove(index_list)
+		## Process the response
+		reply_header = remove_reply[0]
+		reply_body = remove_reply[1:]
+		if reply_header == "RMV":
+			self.logger.info(f"Successfully removed indices {reply_body}")
+		elif reply_header == "ERR":
+			self.logger.error(f"Remove failed with error: {reply_body}")
 
 
 	def get_queue_contents(self):
@@ -183,7 +214,7 @@ class GuideClient:
 		"""
 		len_reply = self._send_len()
 		## The first element is the reply header, "LEN"
-		return len_reply[1:]
+		return int(len_reply[1])
 
 
 	## Server functionality
@@ -244,13 +275,14 @@ class GuideClient:
 
 	## RMV - Removal from queue
 
-	def _send_remove(self, index=None):
+	def _send_remove(self, index_list=None):
 		"""ReMoVe a measurement from the queue
 		"""
+		if index_list is None:
+			index_list = []
 		request = ["RMV"]
-		if index is not None:
+		for index in index_list:
 			request.append(str(index))
-		## Sending with no args will induce server-defined default behaviour
 		reply = self._send_request(request)
 		return reply
 	

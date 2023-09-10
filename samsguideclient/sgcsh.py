@@ -6,6 +6,16 @@ import cmd
 import os
 
 
+def parse_index_int(index_str):
+	"""Parse a string representing a numeric index, which may be empty
+	"""
+	## If the string is empty (eg when using open-ended slices), return None
+	## for valid slice construction
+	if index_str == "":
+		return None
+	return int(index_str)
+
+
 ###############################################################################
 ## GuideClientShell
 ###############################################################################
@@ -85,10 +95,55 @@ class GuideClientShell(cmd.Cmd):
 		 		  "cannot process add request.")
 		
 	
-	def do_remove(self, index):
+	def do_remove(self, index_string):
 		"""Remove a measurement from the queue
+
+		Python's slicing syntax is supported using the : delimiter, eg 2:5
 		"""
-		self.guide_client.remove_measurement(index)
+		## Default to removing the last element
+		if index_string == "":
+			index_string = "-1"
+		index_list = index_string.split(" ")
+		index_spec = []
+		## Parse different items supplied
+		for index_str in index_list:
+			## Ranges using : syntax
+			if index_str.count(":") == 2:
+				start, stop, step = index_str.split(":")
+				## We must be able to parse *all* of the components for the
+				## slice to work, so it's okay to put everything inside the
+				## same try block
+				try:
+					new_slice = slice(parse_index_int(start),
+									  parse_index_int(stop),
+									  parse_index_int(step))
+				except ValueError:
+					print(f"Index f{index_str} cannot be parsed")
+					continue
+				else:
+					index_spec.append(new_slice)
+			elif index_str.count(":") == 1:
+				start, stop = index_str.split(":")
+				## Same as above
+				try:
+					new_slice = slice(parse_index_int(start),
+									  parse_index_int(stop))
+				except ValueError:
+					print(f"Index f{index_str} cannot be parsed")
+					continue
+				else:
+					index_spec.append(new_slice)
+			## Single scalar values
+			else:
+				try:
+					new_index = int(index_str)
+				except ValueError:
+					print(f"Index f{index_str} cannot be parsed")
+					continue
+				else:
+					index_spec.append(new_index)
+		## API call with parsed values (ie *not* strings!)
+		self.guide_client.remove_measurement(index_spec)
 
 
 	def do_query(self, target):
@@ -96,8 +151,6 @@ class GuideClientShell(cmd.Cmd):
 
 		Defaults to sys.stdout
 		"""
-		if target == "":
-			target = None
 		self.guide_client.dump_queue_contents(target)
 
 
