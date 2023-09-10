@@ -134,12 +134,19 @@ class GuideClient:
 		self.logger.debug(f"Loading from file: {config_path}")
 		self.logger.debug(f"himl base_dir is {base_dir}")
 		config = load_config(base_dir, config_path)
+		## Add the measurement based on the loaded config
+		self.add_measurement(config)
+
+		
+	def add_measurement(self, params):
+		"""Add a measurement to the queue from a dict-based config
+		"""
 		## Generate a MeasurementParams object from the config
 		## Even though technically we could pass the config directly to the
 		## server as text without creating and serializing the MP object, we
 		## can use this to ensure that the config is valid on the client side
 		self.logger.debug("Creating MeasurementParams object...")
-		measurement_params = MeasurementParams.MeasurementParams(**config)
+		measurement_params = MeasurementParams.MeasurementParams(**params)
 		## Make the addition API call
 		self.logger.debug("Sending measurement to server...")
 		self._send_add(measurement_params)
