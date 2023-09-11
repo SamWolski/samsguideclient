@@ -3,6 +3,7 @@ OOP interface for Sam's Guide Client
 """
 
 import collections
+import logging
 import os
 import sys
 
@@ -11,6 +12,7 @@ import zmq
 
 from measurement_event_manager import MeasurementParams
 from measurement_event_manager.MeasurementQueue import QueueEmptyError
+from measurement_event_manager.util import logger as mem_logging
 
 from samsguideclient.pretty_print import pretty_print
 
@@ -46,10 +48,18 @@ class GuideClient:
 	"""An inteface class for a MEM Guide Client
 	"""
 
-	def __init__(self, logger, context=None):
+	def __init__(self, logger=None, context=None):
 
 		## Set up logging
-		self.logger = logger
+		if logger is None:
+			logger = logging.getLogger(__name__)
+			self.logger = mem_logging.quick_config(
+											logger,
+											console_log_level=logging.INFO,
+											file_log_level=None,
+											)
+		else:
+			self.logger = logger
 
 		## Set up ZMQ
 		if context is not None:
