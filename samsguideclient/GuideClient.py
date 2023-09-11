@@ -11,8 +11,8 @@ import himl
 import zmq
 
 from measurement_event_manager import MeasurementParams
-from measurement_event_manager.MeasurementQueue import QueueEmptyError
 from measurement_event_manager.util import logger as mem_logging
+import measurement_event_manager.util.errors as mem_errors
 
 from samsguideclient.pretty_print import pretty_print
 
@@ -119,7 +119,7 @@ class GuideClient:
 			self.logger.warning("Request timeout; no reply received.")
 			self.logger.warning("Closing socket; needs to be reconnected.")
 			self.socket.close()
-			return None
+			raise mem_errors.ConnectionTimeoutError
 		self.logger.info("Reply received:")
 		self.logger.info(reply_wrapped)
 

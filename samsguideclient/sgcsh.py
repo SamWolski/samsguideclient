@@ -5,6 +5,8 @@ Interactive shell for Sam's Guide Client for MEM
 import cmd
 import os
 
+from measurement_event_manager.util.errors import ConnectionTimeoutError
+
 
 def parse_index_int(index_str):
 	"""Parse a string representing a numeric index, which may be empty
@@ -44,6 +46,46 @@ class GuideClientShell(cmd.Cmd):
 		## Do nothing when an empty line is returned, instead of the default
 		## behaviour which is to repeat the last command.
 		pass
+
+
+	## Here, we override onecmd() in order to wrap any executed command
+	## in a try-catch block looking for a ConnectionTimeoutError. 
+	## This way, we don't have to clutter up the code for each individual
+	## command definition, and commands that have nothing to do with sending
+	## requests to the server will not be affected anyway.
+	def onecmd(self, line):
+		"""Interpret the argument as though it had been typed in response
+		to the prompt.
+
+		This may be overridden, but should not normally need to be;
+		see the precmd() and postcmd() methods for useful execution hooks.
+		The return value is a flag indicating whether interpretation of
+		commands by the interpreter should stop.
+
+		"""
+		## Up until the next comment is the same as the original
+		cmd, arg, line = self.parseline(line)
+		if not line:
+			return self.emptyline()
+		if cmd is None:
+			return self.default(line)
+		self.lastcmd = line
+		if line == 'EOF' :
+			self.lastcmd = ''
+		if cmd == '':
+			return self.default(line)
+		else:
+			try:
+				func = getattr(self, 'do_' + cmd)
+			except AttributeError:
+				return self.default(line)
+			## Attempt to execute the command with custom exception handling
+			try: 
+				result = func(arg)
+			except ConnectionTimeoutError:
+				print("*** Connection timed out; command incomplete. ***")
+			else:
+				return result
 
 
 	## Command functions
