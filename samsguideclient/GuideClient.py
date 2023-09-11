@@ -251,15 +251,17 @@ class GuideClient:
 	def set_fetch_counter(self, new_value: int):
 		"""Set the fetch counter of the server queue
 		"""
-		counter_value = self._send_fetch(new_value)
+		fetch_reply = self._send_fetch(new_value)
+		counter_value = fetch_reply[1]
 		self.logger.info(f"Fetch counter set to {counter_value}")
 		return counter_value
-	
+
 
 	def get_fetch_counter(self):
 		"""Query the value of the fetch counter of the server queue
 		"""
-		counter_value = self._send_fetch()
+		fetch_reply = self._send_fetch()
+		counter_value = fetch_reply[1]
 		self.logger.info(f"Fetch counter is {counter_value}")
 		return counter_value
 
@@ -335,8 +337,5 @@ class GuideClient:
 			request.append(str(int(new_value)))
 		## Send request
 		reply = self._send_request(request)
-		## Process reply
-		if reply[0] == "FCH":
-			return reply[1]
-		## TODO handle errors?
+		return reply
 
