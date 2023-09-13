@@ -4,7 +4,7 @@ import os
 
 import zmq
 
-import measurement_event_manager.util.logger as mem_logging
+import measurement_event_manager.util.log as mem_logging
 
 import samsguideclient as sgc
 

@@ -11,7 +11,7 @@ import himl
 import zmq
 
 from measurement_event_manager import MeasurementParams
-from measurement_event_manager.util import logger as mem_logging
+from measurement_event_manager.util import log as mem_logging
 import measurement_event_manager.util.errors as mem_errors
 
 from samsguideclient.pretty_print import pretty_print
