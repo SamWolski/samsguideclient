@@ -10,35 +10,6 @@ import samsguideclient as sgc
 
 
 ###############################################################################
-## Utility functions
-###############################################################################
-
-## Log level string/value parsing
-
-STR2LOG = {
-	"debug": logging.DEBUG,
-	"info": logging.INFO,
-	"warning": logging.WARNING,
-	"error": logging.ERROR,
-}
-
-def parse_log_level(level_str_or_int):
-	"""Parse a logging level, either as an int or as a string corresponding
-	to a log level from the logging stdlib
-	"""
-	## Check if this is one of the predefined levels
-	if level_str_or_int in STR2LOG:
-		return STR2LOG[level_str_or_int]
-	
-	## Otherwise, try and parse it as an int
-	try:
-		level = int(level_str_or_int)
-	except ValueError as e:
-		raise ValueError(f"Cannot parse {level_str_or_int} as a logging"
-						 " level") from e
-
-
-###############################################################################
 ## Sam's Guide Client
 ###############################################################################
 
@@ -76,8 +47,12 @@ def launch_client():
 	logger = logging.getLogger("SamsGuideClient")
 	logger = mem_logging.quick_config(
 				logger,
-				console_log_level=parse_log_level(cmd_args.console_log_level),
-				file_log_level=parse_log_level(cmd_args.file_log_level),
+				console_log_level=mem_logging.parse_log_level(
+												cmd_args.console_log_level
+												),
+				file_log_level=mem_logging.parse_log_level(
+												cmd_args.file_log_level
+												),
 				)
 	logger.debug("Logging initialized.")
 
