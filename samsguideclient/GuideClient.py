@@ -10,7 +10,7 @@ import sys
 import himl
 import zmq
 
-from measurement_event_manager import MeasurementParams
+from measurement_event_manager import measurement_params
 from measurement_event_manager.util import log as mem_logging
 import measurement_event_manager.util.errors as mem_errors
 
@@ -156,10 +156,10 @@ class GuideClient:
 		## server as text without creating and serializing the MP object, we
 		## can use this to ensure that the config is valid on the client side
 		self.logger.debug("Creating MeasurementParams object...")
-		measurement_params = MeasurementParams.MeasurementParams(**params)
+		params = measurement_params.MeasurementParams(**params)
 		## Make the addition API call
 		self.logger.debug("Sending measurement to server...")
-		self._send_add(measurement_params)
+		self._send_add(params)
 
 
 	def remove_measurement(self, index_iterable):
@@ -213,7 +213,7 @@ class GuideClient:
 		print_list = []
 		for index, mp_spec in enumerate(queue_contents):
 			## Reconstruct the MeasurementParams object
-			mp_obj = MeasurementParams.from_json(mp_spec)
+			mp_obj = measurement_params.from_json(mp_spec)
 			print_list.append(pretty_print(mp_obj, index=index))
 		## TODO confirm that this will be lazy-evaluated only when used later
 		print_generator = (f"{pp}\n" for pp in print_list)
