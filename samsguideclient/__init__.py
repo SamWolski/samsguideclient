@@ -1,2 +1,2 @@
-from . import GuideClient
+from . import sgc
 from . import sgcsh

@@ -185,7 +185,7 @@ class GuideClientShell(cmd.Cmd):
 				else:
 					index_spec.append(new_index)
 		## API call with parsed values (ie *not* strings!)
-		self.guide_client.remove_measurement(index_spec)
+		self.guide_client.remove(index_spec)
 
 
 	def do_query(self, target):

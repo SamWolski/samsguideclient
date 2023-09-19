@@ -5,8 +5,19 @@ import os
 import zmq
 
 import measurement_event_manager.util.log as mem_logging
+from measurement_event_manager.interfaces.guide import (
+	GuideRequestInterface,
+)
 
 import samsguideclient as sgc
+
+
+###############################################################################
+## Default values
+###############################################################################
+
+
+DEF_GUIDE_ENDPOINT = "tcp://localhost:9010"
 
 
 ###############################################################################
@@ -22,11 +33,11 @@ def launch_client():
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument("config",
-						help="Config file containing generation parameters",
+						help="Config file(s) containing generation parameters",
 						nargs="*")
 	parser.add_argument("--endpoint",
 						help="Endpoint address for MEM server connection",
-						default="tcp://localhost:9010")
+						default=None)
 	parser.add_argument("--interactive", "-i",
 						help="Enable interactive mode",
 						action="store_true")
@@ -57,19 +68,30 @@ def launch_client():
 	logger.debug("Logging initialized.")
 
 
-	## ZMQ messaging
+	## Communications setup
+	#######################
+
+
+	## Initialize context
 	context = zmq.Context()
+
+	## Guide request address
+	if cmd_args.endpoint is not None:
+		guide_request_endpoint = cmd_args.guide_request_endpoint
+	else:
+		guide_request_endpoint = DEF_GUIDE_ENDPOINT
 
 
 	## Guide client
 	###############
 
-	## Instantiate object
-	guide_client = sgc.GuideClient.GuideClient(
-										logger=logger,
-										context=context,
-										)
-	guide_client.connect_to_server(endpoint=cmd_args.endpoint)
+
+	## Instantiate Guide client
+	guide_client = sgc.sgc.GuideClient(
+									endpoint=guide_request_endpoint,
+									logger=logger,
+									zmq_context=context,
+									)
 
 	
 	## Argument-based execution
