@@ -77,7 +77,7 @@ def launch_client():
 
 	## Guide request address
 	if cmd_args.endpoint is not None:
-		guide_request_endpoint = cmd_args.guide_request_endpoint
+		guide_request_endpoint = cmd_args.endpoint
 	else:
 		guide_request_endpoint = DEF_GUIDE_ENDPOINT
 
