@@ -73,20 +73,40 @@ class GuideClient:
 		else:
 			self._context = zmq_context
 		
-		## Set up socket
-		guide_request_socket = self._context.socket(zmq.REQ)
-		guide_request_socket.connect(self._endpoint)
-		logger.debug(f"Guide request socket bound to {self._endpoint}")
 		## Initialize the interface
+		## Starts with an empty socket - will be added when connecting
 		self._interface = GuideRequestInterface(
-											socket=guide_request_socket,
+											socket=None,
 											protocol_name="MEM-GR/0.1",
 											logger=self.logger,
 											)
+		## Set up connection
+		## Automatic the first time; reconnects must be manual
+		## Socket is passed to the interface as part of the connection method
+		self.connect_to_server()
 
 
 	## Server functionality and status
 	##################################
+
+
+	## Connection
+
+	def connect_to_server(self, endpoint=None):
+		"""Connect to the serverat the specified endpoint
+		"""
+		## If a new endpoint is specified, update the stored one
+		if endpoint is not None:
+			self._endpoint = endpoint
+		## (Re)open the socket
+		guide_request_socket = self._context.socket(zmq.REQ)
+		guide_request_socket.connect(self._endpoint)
+		self.logger.debug(f"Guide request socket bound to {self._endpoint}")
+		## Update the socket at the interface
+		self._interface.set_socket(guide_request_socket)
+		## Exit gracefully
+		return True
+
 
 	## General
 
