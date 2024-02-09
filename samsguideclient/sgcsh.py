@@ -3,6 +3,7 @@ Interactive shell for Sam's Guide Client for MEM
 """
 
 import cmd
+from importlib.metadata import version
 import os
 
 from measurement_event_manager.util.errors import ConnectionTimeoutError
@@ -28,7 +29,10 @@ class GuideClientShell(cmd.Cmd):
 	"""
 
 	## Class attributes from the example in the Python docs
-	intro = "Measurement client interactive mode.\n"
+	intro = (
+		"Measurement client interactive mode."
+		f"\nVersion: {version('samsguideclient')}"
+	)
 	prompt = "[sgc] "
 	file = None
 
