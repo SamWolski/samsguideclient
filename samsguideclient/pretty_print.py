@@ -30,14 +30,19 @@ def pretty_print(mp,
 	
 	print_str += f"Submitter: {mp.submitter}\n"
 	## Metadata
-	print_str += f"Metadata:\n"
+	print_str += "Metadata:\n"
 	for meta_key, meta_val in mp.metadata.items():
 		print_str += f"    {meta_key:-<20}: {meta_val}\n"
 	## Setvals
-	print_str += f"Setvals:\n"
+	print_str += "Setvals:\n"
 	for instr_name, instr_vals in mp.setvals.items():
 		print_str += f"--> {instr_name}:\n"
 		for param_name, param_val in instr_vals.items():
+			print_str += f"      {param_name:-<20}: {param_val}\n"
+	## Sweeps
+	if mp.sweep:
+		print_str += "Sweep:\n"
+		for param_name, param_val in mp.sweep.items():
 			print_str += f"      {param_name:-<20}: {param_val}\n"
 
 	## Footer
