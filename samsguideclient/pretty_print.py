@@ -41,9 +41,11 @@ def pretty_print(mp,
 			print_str += f"      {param_name:-<20}: {param_val}\n"
 	## Sweeps
 	if mp.sweep:
-		print_str += "Sweep:\n"
-		for param_name, param_val in mp.sweep.items():
-			print_str += f"      {param_name:-<20}: {param_val}\n"
+		print_str += "Sweep: (Dims are SLOW to FAST)\n"
+		for dim_index, sweep_dim in enumerate(mp.sweep):
+			print_str += f"--> Dim {dim_index}:\n"
+			for param_name, param_val in sweep_dim.items():
+				print_str += f"      {param_name:-<20}: {param_val}\n"
 
 	## Footer
 	print_str += "="*59

@@ -7,7 +7,7 @@ _requires = [ r for r in
 
 setuptools.setup(
 	name="SamsGuideClient",
-	version="0.0.2",
+	version="0.1.0",
 	description="Sam's Guide Client for the MeasurementEventManager system",
 	author="Sam Wolski",
 	python_requires=">=3.10",
